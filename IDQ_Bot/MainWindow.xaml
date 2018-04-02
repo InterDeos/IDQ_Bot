@@ -1,0 +1,23 @@
+﻿<Window x:Class="IDQ_Bot.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:IDQ_Bot"
+        xmlns:vm="clr-namespace:IDQ_Bot.ViewModel"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="600" Width="500" 
+        Background="#FF0F0E0E" ResizeMode="NoResize">
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <TabControl>
+            <TabItem Header="PlanetRomeo">
+                <Frame Content="{Binding PlanetRomeo}" NavigationUIVisibility="Hidden"/>
+            </TabItem>
+            <TabItem Header="Neu.de">
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
