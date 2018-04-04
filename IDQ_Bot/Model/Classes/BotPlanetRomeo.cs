@@ -16,6 +16,7 @@ namespace IDQ_Bot.Model.Classes
         private IMessageService _log;
         private IMessageService _error;
         private IWebDriverManager web;
+        private bool _err;
 
 
         public BotPlanetRomeo(
@@ -85,19 +86,69 @@ namespace IDQ_Bot.Model.Classes
         }
         public bool SendMessage(PRProfileGay gay, List<Message> messages, int mintime, int maxtime)
         {
-            bool result = false;
+            _err = false;
+
+            var listmess = new List<Message>();
+
+            foreach (var item in messages)
+            {
+                listmess.Add(new Message { Text = item.Text.Replace("<nick>", gay.NickName) });
+            }
 
             web.GoToUrl(gay.LinkProfile).
-                FindElement("a[href*=\"/msg/?uid\"")
+                FindElement("a[href*=\"/msg/?uid\"]")
                 .Sleep(mintime, maxtime).
                 Click().SwitcWindow(web.GetWindows().Last()).
                 FindElement("textarea#txt").
                 Sleep(mintime, maxtime).
-                SendKeys(messages[RandInt(0, messages.Count - 1)].Text).
+                SendKeys(listmess[RandInt(0, messages.Count - 1)].Text).
                 Sleep(mintime, maxtime).
                 FindElement("input#id_submit").Click().SwitcWindow(web.GetWindows().Last());
 
-            return result;
+            return _err;
+        }
+        public int SendMessageEmail(PRProfileGay gay, List<Message> messages, int mintime, int maxtime)
+        {
+            _err = false;
+            int status = 0;
+
+            var listmess = new List<Message>();
+
+            foreach (var item in messages)
+            {
+                listmess.Add(new Message { Text = item.Text.Replace("<nick>", gay.NickName) });
+            }
+
+            web.GoToUrl(gay.LinkProfile).
+                FindElement("a[href*=\"/msg/history.php?\"]")
+                .Sleep(mintime, maxtime).
+                Click().SwitcWindow(web.GetWindows().Last());
+            List<IWebElement> elements = web.FindElements("a[href*=\"auswertung/setcard/?set=\"]").WebElements;
+
+            if(elements.Last().Text == gay.NickName)
+            {
+                web.GoToUrl(gay.LinkMessage).
+                FindElement("textarea#txt").
+                Sleep(mintime, maxtime).
+                SendKeys(listmess[RandInt(0, messages.Count - 1)].Text).
+                Sleep(mintime, maxtime).
+                FindElement("input#id_submit").Click().SwitcWindow(web.GetWindows().First());
+                status = 1;
+            }
+            else
+            {
+                web.SwitcWindow(web.GetWindows().First());
+                status = 2;
+            }
+
+            if (_err)
+            {
+                return 0;
+            }
+            else
+            {
+                return status;
+            }
         }
         public void AnswerMessages()
         {
@@ -109,9 +160,10 @@ namespace IDQ_Bot.Model.Classes
                 SwitchToDefault().
                 SwitchFrame("mitte");
         }
-        public List<PRProfileGay> ParseProfiles(int countPage, int mintime, int maxtime)
+        public bool ParseProfiles(int FromPage, int ToPage, int mintime, int maxtime, List<PRProfileGay> list, out List<PRProfileGay> listout)
         {
-            var listprofiles = new List<PRProfileGay>();
+            _err = false;
+            var listprofiles = list;
 
             web.SwitchToDefault().
                 SwitchFrame("mitte").
@@ -126,18 +178,23 @@ namespace IDQ_Bot.Model.Classes
 
             string pattern = "\\?uid=(\\d+)";
             Regex regex = new Regex(pattern);
-
-            var count = 0;
-            foreach (string link in pages)
+            
+            for(int count = FromPage-1; count < ToPage; count ++)
             {
-                if (count < countPage)
+                if (_err) break;
+                if(count > 0)
+                {
+                    web.GoToUrl(pages[count-1]).Sleep(mintime, maxtime);
+                }
+                try
                 {
                     List<IWebElement> linksProfile = web.FindElementsObj("a.profile-name").ToList();
                     List<IWebElement> optionLines = web.FindElementsObj("td.optionLine > span[style*=\"white-space:nowrap\"]").ToList();
                     List<IWebElement> linksMessage = web.FindElementsObj("a[href^=\"../msg/?uid=\"]").ToList();
-
                     for (int i = 0; i < linksProfile.Count; i++)
                     {
+                        if(!(listprofiles.Find((x)=> x.UserID == Regex.Match(linksMessage[i].GetAttribute("href"), pattern).Groups[1].Value).UserID ==
+                            Regex.Match(linksMessage[i].GetAttribute("href"), pattern).Groups[1].Value))
                         listprofiles.Add(new PRProfileGay(
                             Regex.Match(linksMessage[i].GetAttribute("href"), pattern).Groups[1].Value,
                             linksProfile[i].Text,
@@ -145,12 +202,11 @@ namespace IDQ_Bot.Model.Classes
                             linksMessage[i].GetAttribute("href"),
                             StatusProfileGay.NotSend));
                     }
-
-                    web.GoToUrl(link).Sleep(mintime, maxtime);
                 }
-                count++;
+                catch { }
             }
-            return listprofiles;
+            listout = listprofiles;
+            return _err;
         }
 
         private bool IsAuthorized()
@@ -161,6 +217,7 @@ namespace IDQ_Bot.Model.Classes
         private void EventWebError(string obj)
         {
             _error.ShowError(obj);
+            _err = true;
         }
         private void EventWebAction(string obj)
         {

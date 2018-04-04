@@ -127,9 +127,8 @@
                               ItemsSource="{Binding ItemsAreas}"
                               SelectedValue="{Binding SelectedArea}"/>
                     <TextBlock Text="{Binding LabelMinAge}"/>
-                    <Slider Margin="10,0" Minimum="18" Value="{Binding MinAge}" Maximum="65"/>
-                    <TextBlock Text="{Binding LabelMaxAge}" />
-                    <Slider Margin="10,0" Minimum="18" Value="{Binding MaxAge}" Maximum="75"/>
+                    <Slider Margin="10,5" Minimum="18" Value="{Binding MinAge}" Maximum="65"/>
+                    <Slider Margin="10,5" Minimum="18" Value="{Binding MaxAge}" Maximum="75"/>
                     <Button  Margin="15,5" Height="30" 
                              Content="Add"
                              Command="{Binding AddSearchSettings}"/>
@@ -142,19 +141,24 @@
                 <StackPanel>
                     <TextBlock Text="For Parse"/>
                     <TextBlock Text="{Binding LabelParsePage}"/>
+                    <Slider Margin="10,5" 
+                            Minimum="1" 
+                            TickFrequency="1"
+                            IsSnapToTickEnabled="True"
+                            Value="{Binding FromCountParsePage}" 
+                            Maximum="20"/>
                     <Slider Margin="10,0" 
                             Minimum="1" 
                             TickFrequency="1"
                             IsSnapToTickEnabled="True"
-                            Value="{Binding CountParsePage}" 
+                            Value="{Binding ToCountParsePage}" 
                             Maximum="20"/>
                     <TextBlock Text="{Binding LabelMinTimeOutOfSteps}"/>
-                    <Slider Margin="10,0" Minimum="100" 
+                    <Slider Margin="10,5" Minimum="100" 
                             TickFrequency="100"
                             IsSnapToTickEnabled="True"
                             Value="{Binding MinTimeOutOfSteps}" 
                             Maximum="10000"/>
-                    <TextBlock Text="{Binding LabelMaxTimeOutOfSteps}" />
                     <Slider Margin="10,0" Minimum="100" 
                             TickFrequency="100"
                             IsSnapToTickEnabled="True"
@@ -218,13 +222,18 @@
                     <ListBox Height="300" Margin="5,5" 
                              ScrollViewer.VerticalScrollBarVisibility="Auto"
                              IsSynchronizedWithCurrentItem="True"
-                             ItemsSource="{Binding ListProfileGays}">
+                             ItemsSource="{Binding ListProfileGays}"
+                             SelectedItem="{Binding SelectedProfileGay}">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
                                 <Setter Property="Template" Value="{StaticResource ListBoxProfileG}" />
                             </Style>
                         </ListBox.ItemContainerStyle>
                     </ListBox>
+                    <Button Margin="15,5" Height="30" 
+                            Content="Delete Profile" Command="{Binding DeleteProfileGay}"/>
+                    <Button Margin="15,5" Height="30"
+                            Content="Clear List" Command="{Binding ClearList}"/>
                 </StackPanel>
             </Grid>
         </Grid>

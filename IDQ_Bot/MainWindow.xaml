@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:IDQ_Bot"
         xmlns:vm="clr-namespace:IDQ_Bot.ViewModel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="500" 
+        Title="MainWindow" Height="630" Width="550" 
         Background="#FF0F0E0E" ResizeMode="NoResize">
     <Window.DataContext>
         <vm:MainViewModel/>

@@ -71,17 +71,29 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Model\Classes\BotPlanetRomeo.cs" />
+    <Compile Include="Model\Classes\PlanetRomeo\MessagesSettings.cs" />
+    <Compile Include="Model\Classes\PlanetRomeo\PlacesHelper.cs" />
+    <Compile Include="Model\Classes\PlanetRomeo\ProfilesSettings.cs" />
+    <Compile Include="Model\Classes\PlanetRomeo\SSSettings.cs" />
     <Compile Include="Model\Structs\Message.cs" />
     <Compile Include="Model\Structs\PlanetRomeo\PRPlace.cs" />
     <Compile Include="Model\Structs\PlanetRomeo\PRProfileGay.cs" />
     <Compile Include="Model\Structs\PlanetRomeo\PRSearchSettings.cs" />
     <Compile Include="Model\Structs\Profile.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="ViewModel\Pages\PlanetRomeo\MessageSettings.cs" />
-    <Compile Include="ViewModel\Pages\PlanetRomeo\ParseSettings.cs" />
-    <Compile Include="ViewModel\Pages\PlanetRomeo\ProfilesSettings.cs" />
+    <Compile Include="ViewModel\Pages\PlanetRomeo\MessageSettings\Fields.cs" />
+    <Compile Include="ViewModel\Pages\PlanetRomeo\MessageSettings\Methods.cs" />
+    <Compile Include="ViewModel\Pages\PlanetRomeo\MessageSettings\Properties.cs" />
+    <Compile Include="ViewModel\Pages\PlanetRomeo\ParseSettings\Fields.cs" />
+    <Compile Include="ViewModel\Pages\PlanetRomeo\ParseSettings\Methods.cs" />
+    <Compile Include="ViewModel\Pages\PlanetRomeo\ParseSettings\Properties.cs" />
+    <Compile Include="ViewModel\Pages\PlanetRomeo\ProfileBot\Fields.cs" />
+    <Compile Include="ViewModel\Pages\PlanetRomeo\ProfileBot\Methods.cs" />
+    <Compile Include="ViewModel\Pages\PlanetRomeo\ProfileBot\Properties.cs" />
     <Compile Include="ViewModel\Pages\PlanetRomeo\PRViewModel.cs" />
-    <Compile Include="ViewModel\Pages\PlanetRomeo\SearchSettings.cs" />
+    <Compile Include="ViewModel\Pages\PlanetRomeo\SearchSettings\Fields.cs" />
+    <Compile Include="ViewModel\Pages\PlanetRomeo\SearchSettings\Methods.cs" />
+    <Compile Include="ViewModel\Pages\PlanetRomeo\SearchSettings\Properties.cs" />
     <Compile Include="View\Pages\PlanetRomeo.xaml.cs">
       <DependentUpon>PlanetRomeo.xaml</DependentUpon>
     </Compile>

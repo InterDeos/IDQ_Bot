@@ -1,1 +1,1 @@
-{"ListMessages":[{"Type":0,"TypeMessage":"FirstMessage","Text":"Hallo"},{"Type":0,"TypeMessage":"FirstMessage","Text":"Hi"}],"SelectedMessage":{"Type":0,"TypeMessage":"FirstMessage","Text":null}}
+{"ListMessages":[{"Type":1,"TypeMessage":"EmailMessage","Text":"Email"},{"Type":0,"TypeMessage":"FirstMessage","Text":"Hallo"},{"Type":0,"TypeMessage":"FirstMessage","Text":"You Sexy \u003cnick\u003e"}],"SelectedMessage":{"Type":0,"TypeMessage":"FirstMessage","Text":null}}

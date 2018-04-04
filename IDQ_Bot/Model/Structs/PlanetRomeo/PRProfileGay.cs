@@ -9,13 +9,13 @@ namespace IDQ_Bot.Model.Structs.PlanetRomeo
     {
         NotSend,
         FistMessage,
+        EmailMessage,
     }
     struct PRProfileGay
     {
         private string _userID;
         private string _nickName;
         private string _linkProfile;
-        private string _option;
         private string _linkMessage;
         private StatusProfileGay _status;
 
@@ -38,6 +38,11 @@ namespace IDQ_Bot.Model.Structs.PlanetRomeo
                     case "FistMessage":
                         {
                             _status = StatusProfileGay.FistMessage;
+                            break;
+                        }
+                    case "EmailMessage":
+                        {
+                            _status = StatusProfileGay.EmailMessage;
                             break;
                         }
                 }
