@@ -11,8 +11,8 @@ namespace IDQ_Bot.ViewModel.Pages.PlanetRomeo
         {
             FromCountParsePage = 1;
             ToCountParsePage = 20;
-            MinTimeOutOfSteps = 300;
-            MaxTimeOutOfSteps = 900;
+            MinTimeOutOfSteps = 1100;
+            MaxTimeOutOfSteps = 3200;
         }
     }
 }

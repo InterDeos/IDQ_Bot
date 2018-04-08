@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.27428.2015
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IDQ_Bot", "IDQ_Bot\IDQ_Bot.csproj", "{A49AC568-AE17-4A6A-8ED5-17774EC17CFC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IDQ_Core_0", "..\IDQ_Core\IDQ_Core_0\IDQ_Core_0.csproj", "{8C8A61B3-5236-4891-9C78-BF50BD80D9CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IDQ_DataModel", "IDQ_DataModel\IDQ_DataModel.csproj", "{72675583-1E2E-4135-9CF8-1F0342D3C092}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{A49AC568-AE17-4A6A-8ED5-17774EC17CFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A49AC568-AE17-4A6A-8ED5-17774EC17CFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A49AC568-AE17-4A6A-8ED5-17774EC17CFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C8A61B3-5236-4891-9C78-BF50BD80D9CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C8A61B3-5236-4891-9C78-BF50BD80D9CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C8A61B3-5236-4891-9C78-BF50BD80D9CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C8A61B3-5236-4891-9C78-BF50BD80D9CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72675583-1E2E-4135-9CF8-1F0342D3C092}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72675583-1E2E-4135-9CF8-1F0342D3C092}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72675583-1E2E-4135-9CF8-1F0342D3C092}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72675583-1E2E-4135-9CF8-1F0342D3C092}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

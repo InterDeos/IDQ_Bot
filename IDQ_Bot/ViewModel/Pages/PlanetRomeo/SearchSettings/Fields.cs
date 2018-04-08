@@ -1,6 +1,6 @@
 ﻿using IDQ_Bot.Model.Classes.PlanetRomeo;
 using IDQ_Bot.Model.Structs.PlanetRomeo;
-using IDQ_Core_0.Classes;
+using IDQ_Core_0.Class;
 using System;
 using System.Collections.Generic;
 using System.Linq;

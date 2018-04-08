@@ -28,3 +28,6 @@ F:\IDQuods\IDQ_Bot\IDQ_Bot\obj\Release\IDQ_Bot.csproj.CoreCompileInputs.cache
 F:\IDQuods\IDQ_Bot\IDQ_Bot\obj\Release\IDQ_Bot.csproj.CopyComplete
 F:\IDQuods\IDQ_Bot\IDQ_Bot\obj\Release\IDQ_Bot.exe
 F:\IDQuods\IDQ_Bot\IDQ_Bot\obj\Release\IDQ_Bot.pdb
+F:\IDQuods\IDQ_Bot\IDQ_Bot\obj\Release\IDQ_Bot.csprojResolveAssemblyReference.cache
+F:\IDQuods\IDQ_Bot\IDQ_Bot\bin\Release\IDQ_DataModel.dll
+F:\IDQuods\IDQ_Bot\IDQ_Bot\bin\Release\IDQ_DataModel.pdb

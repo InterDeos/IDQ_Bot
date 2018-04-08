@@ -42,9 +42,6 @@
     <Reference Include="DevExpress.Mvvm.UI, Version=17.1.0.0, Culture=neutral, PublicKeyToken=382ad28f6ae31f30, processorArchitecture=MSIL">
       <HintPath>..\packages\DevExpressMvvm.17.1.6.0\lib\net40-client\DevExpress.Mvvm.UI.dll</HintPath>
     </Reference>
-    <Reference Include="IDQ_Core_0">
-      <HintPath>..\IDQ_Core\IDQ_Core_0.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -55,12 +52,6 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="WebDriver">
-      <HintPath>..\..\IDQ_Core\Selenium\WebDriver.dll</HintPath>
-    </Reference>
-    <Reference Include="WebDriver.Support">
-      <HintPath>..\..\IDQ_Core\Selenium\WebDriver.Support.dll</HintPath>
-    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -70,15 +61,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Model\Classes\BotPlanetRomeo.cs" />
     <Compile Include="Model\Classes\PlanetRomeo\MessagesSettings.cs" />
     <Compile Include="Model\Classes\PlanetRomeo\PlacesHelper.cs" />
     <Compile Include="Model\Classes\PlanetRomeo\ProfilesSettings.cs" />
     <Compile Include="Model\Classes\PlanetRomeo\SSSettings.cs" />
-    <Compile Include="Model\Structs\Message.cs" />
     <Compile Include="Model\Structs\PlanetRomeo\PRPlace.cs" />
-    <Compile Include="Model\Structs\PlanetRomeo\PRProfileGay.cs" />
-    <Compile Include="Model\Structs\PlanetRomeo\PRSearchSettings.cs" />
     <Compile Include="Model\Structs\Profile.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\Pages\PlanetRomeo\MessageSettings\Fields.cs" />
@@ -155,6 +142,15 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\IDQ_Core\IDQ_Core_0\IDQ_Core_0.csproj">
+      <Project>{8c8a61b3-5236-4891-9c78-bf50bd80d9ce}</Project>
+      <Name>IDQ_Core_0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IDQ_DataModel\IDQ_DataModel.csproj">
+      <Project>{72675583-1e2e-4135-9cf8-1f0342d3c092}</Project>
+      <Name>IDQ_DataModel</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

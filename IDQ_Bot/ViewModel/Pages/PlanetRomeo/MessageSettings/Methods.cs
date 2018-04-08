@@ -1,7 +1,8 @@
 ﻿using DevExpress.Mvvm;
 using IDQ_Bot.Model.Classes.PlanetRomeo;
 using IDQ_Bot.Model.Structs;
-using IDQ_Core_0.Classes;
+using IDQ_Core_0.Class;
+using IDQ_DataModel.Main.Struct;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -77,14 +78,25 @@ namespace IDQ_Bot.ViewModel.Pages.PlanetRomeo
             {
                 return new DelegateCommand(() =>
                 {
-                    if (!ListMessages.Contains(new Message { Text = Message }) && Message != null && Message != "")
+                    string text = "";
+
+                    if (Message.Split(';').Count() > 1)
                     {
-                        ListMessages.Add(new Message { TypeMessage = SelectedTypeMessage, Text = Message });
+                        text = Message;
+                    }
+                    else { text = Message + ";" + "English"; }
+
+                    if (!ListMessages.Contains(new Message { Text = text }) && Message != "")
+                    {
+                        ListMessages.Add(new Message { TypeMessage = SelectedTypeMessage, Text = text });
                         Message = "";
                         SelectedMessage = ListMessages.Last();
                         msettings.SerializeToFile(PRMSETPATH);
                         RaisePropertiesChanged("SelectedMessage", "Message");
                     }
+                },()=>
+                {
+                    return (Message != null && Message != "");
                 });
             }
         }

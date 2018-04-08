@@ -29,3 +29,5 @@ F:\IDQuods\IDQ_Bot\IDQ_Bot\bin\Debug\WebDriver.dll
 F:\IDQuods\IDQ_Bot\IDQ_Bot\bin\Debug\WebDriver.Support.dll
 F:\IDQuods\IDQ_Bot\IDQ_Bot\bin\Debug\IDQ_Core_0.pdb
 F:\IDQuods\IDQ_Bot\IDQ_Bot\obj\Debug\Template\PRTemplate.baml
+F:\IDQuods\IDQ_Bot\IDQ_Bot\bin\Debug\IDQ_DataModel.dll
+F:\IDQuods\IDQ_Bot\IDQ_Bot\bin\Debug\IDQ_DataModel.pdb

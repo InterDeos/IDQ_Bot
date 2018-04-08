@@ -1,5 +1,5 @@
 ﻿using DevExpress.Mvvm;
-using IDQ_Core_0.Classes;
+using IDQ_Core_0.Class;
 using System;
 using System.Collections.Generic;
 using System.Linq;

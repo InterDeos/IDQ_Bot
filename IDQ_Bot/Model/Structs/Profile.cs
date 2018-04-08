@@ -26,10 +26,17 @@ namespace IDQ_Bot.Model.Struct
         {
             return op1.Equals(op2);
         }
-
         public static bool operator !=(Profile op1, Profile op2)
         {
             return !op1.Equals(op2);
+        }
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using IDQ_Bot.Model.Structs.PlanetRomeo;
+using IDQ_DataModel.PlanetRomeo.Struct;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

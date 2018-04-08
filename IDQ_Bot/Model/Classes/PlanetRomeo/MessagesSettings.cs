@@ -1,4 +1,5 @@
 ﻿using IDQ_Bot.Model.Structs;
+using IDQ_DataModel.Main.Struct;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

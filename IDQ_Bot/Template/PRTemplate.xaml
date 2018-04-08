@@ -73,8 +73,12 @@
                         <TextBlock Foreground="{StaticResource ControlForegroundWhite}" Text=" Type: "/>
                         <TextBlock Foreground="{StaticResource ControlForegroundWhite}" Text="{Binding TypeMessage}"/>
                     </StackPanel>
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock TextAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}" Text=" Text"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Foreground="{StaticResource ControlForegroundWhite}" Text=" Language: "/>
+                        <TextBlock Foreground="{StaticResource ControlForegroundWhite}" Text="{Binding Language}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock TextAlignment="Left" Foreground="{StaticResource ControlForegroundWhite}" Text=" Text: "/>
                         <TextBlock Foreground="{StaticResource ControlForegroundWhite}" Text="{Binding Text}"/>
                     </StackPanel>
                 </StackPanel>

@@ -3,7 +3,11 @@ using IDQ_Bot.Model.Classes;
 using IDQ_Bot.Model.Classes.PlanetRomeo;
 using IDQ_Bot.Model.Struct;
 using IDQ_Bot.Model.Structs.PlanetRomeo;
-using IDQ_Core_0.Classes;
+using IDQ_Core_0.Class;
+using IDQ_Core_0.Class.MessageService;
+using IDQ_DataModel.Main.Struct;
+using IDQ_DataModel.PlanetRomeo.Struct;
+using IDQ_DataModel.PlanetRomeo.Class;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,8 +23,11 @@ namespace IDQ_Bot.ViewModel.Pages.PlanetRomeo
         private const string PARSEDPATH = "Data/PlanetRomeo/ParsedProfilesGay.json";
         private List<PRProfileGay> listprofilegays = new List<PRProfileGay>();
         private PRProfileGay _selectedProfileGay;
+        private PRBot bot;
+        private ConsoleMessageService log;
 
         public ObservableCollection<PRProfileGay> ListProfileGays { get; set; }
+        public string LabelListProfiles { get; set; }
         public PRProfileGay SelectedProfileGay { get => _selectedProfileGay; set => _selectedProfileGay = value; }
 
         public PRViewModel()
@@ -29,30 +36,38 @@ namespace IDQ_Bot.ViewModel.Pages.PlanetRomeo
             InitSearchSettings();
             InitParseSettings();
             InitMessageSettings();
+
             if (FileManager.IsExist(PARSEDPATH))
             {
                 List<PRProfileGay> list = JSONSerializer.DeserializeFromFile<List<PRProfileGay>>(PARSEDPATH);
                 ListProfileGays = new ObservableCollection<PRProfileGay>(list);
+                listprofilegays = list;
                 RaisePropertiesChanged("ListProfileGays");
+                LabelListProfiles = string.Format("List Profiles Gays Count: {0}", ListProfileGays.Count);
+                RaisePropertyChanged("LabelListProfiles");
             }
             else
             {
                 ListProfileGays = new ObservableCollection<PRProfileGay>();
+                LabelListProfiles = string.Format("List Profiles Gays Count: {0}", ListProfileGays.Count);
+                RaisePropertyChanged("LabelListProfiles");
             }
 
+            log = new ConsoleMessageService();
+            bot = new PRBot(new WebDriverManager(), log, log);
         }
 
 
 
 
-        private void Parse(BotPlanetRomeo bot, ref List<PRProfileGay> list)
+        private void Parse(ref List<PRProfileGay> list)
         {
             bot.SearchProfilesGay(SelectedSearchSettings.ToID(places), MinTimeOutOfSteps, MaxTimeOutOfSteps);
-            var listout = new List<PRProfileGay>();
             _err = bot.ParseProfiles(FromCountParsePage, ToCountParsePage, MinTimeOutOfSteps, MaxTimeOutOfSteps, list, out list);
         }
-        private void Send(BotPlanetRomeo bot, ref List<PRProfileGay> list)
+        private void Send(ref List<PRProfileGay> list)
         {
+            _err = false;
             switch (SelectedTypeMessage)
             {
                 case "FirstMessage":
@@ -64,8 +79,9 @@ namespace IDQ_Bot.ViewModel.Pages.PlanetRomeo
                         foreach (var gay in list.Where((x) => x.TypeStatus == StatusProfileGay.NotSend))
                         {
                             if (count >= countmessage) break;
+                            if (_err) break;
 
-                            if (!bot.SendMessage(gay, ListMessages.Where((x) => x.Type == Model.Structs.TypeMessage.FirstMessage).ToList(), MinTimeOutOfSteps, MaxTimeOutOfSteps))
+                            if (!bot.SendMessage(gay, ListMessages.Where((x) => x.Type == TypeMessage.FirstMessage).ToList(), MinTimeOutOfSteps, MaxTimeOutOfSteps))
                             {
                                 deletelist.Add(gay);
                                 count++;
@@ -101,8 +117,9 @@ namespace IDQ_Bot.ViewModel.Pages.PlanetRomeo
                         foreach (var gay in list.Where((x) => x.TypeStatus == StatusProfileGay.FistMessage))
                         {
                             if (count >= countmessage) break;
+                            if (_err) break;
 
-                            int status = bot.SendMessageEmail(gay, ListMessages.Where((x) => x.Type == Model.Structs.TypeMessage.EmailMessage).ToList(), MinTimeOutOfSteps, MaxTimeOutOfSteps);
+                            int status = bot.SendMessageEmail(gay, ListMessages.Where((x) => x.Type == TypeMessage.EmailMessage).ToList(), MinTimeOutOfSteps, MaxTimeOutOfSteps);
 
                             if (status == 1)
                             {
@@ -140,6 +157,51 @@ namespace IDQ_Bot.ViewModel.Pages.PlanetRomeo
                     }
             }
         }
+        private bool UseCommand()
+        {
+            if (!_work && SelectedProfile != default(Profile) && SelectedSearchSettings != default(PRSearchSettings) && ListMessages.Count > 0)
+                return true;
+            else
+                return false;
+        }
+        private Action HeadActions(Action action, string message)
+        {
+            return () =>
+            {
+                Task.Factory.StartNew(() =>
+                {
+                    _work = true;
+                    bot = new PRBot(new WebDriverManager(true), log, log);
+                    bot.ActionEvent += Bot_ActionEvent;
+                    bot.ActionErrorEvent += Bot_ActionErrorEvent;
+
+                    if (bot.Authorization(SelectedProfile.Login, SelectedProfile.Password))
+                    {
+                        action();
+
+                        if (!_err)
+                        {
+                            bot.Logout();
+                            bot.Quit();
+                        }
+
+                    }
+                    WinFormMessageService.ShowMesssage(message);
+
+                    _work = false;
+                });
+            };
+        }
+
+        private void Bot_ActionErrorEvent(string obj)
+        {
+            WinFormMessageService.ShowError(obj);
+        }
+
+        private void Bot_ActionEvent(string obj)
+        {
+            if(obj == "Stop") { _err = true; SaveList(listprofilegays); }
+        }
 
         private void SaveList(List<PRProfileGay> list)
         {
@@ -147,6 +209,8 @@ namespace IDQ_Bot.ViewModel.Pages.PlanetRomeo
             ListProfileGays = new ObservableCollection<PRProfileGay>(list);
             if (ListProfileGays.Count > 0) SelectedProfileGay = ListProfileGays.Last();
             RaisePropertyChanged("ListProfileGays");
+            LabelListProfiles = string.Format("List Profiles Gays Count: {0}", ListProfileGays.Count);
+            RaisePropertyChanged("LabelListProfiles");
         }
 
         public DelegateCommand DeleteProfileGay
@@ -172,102 +236,44 @@ namespace IDQ_Bot.ViewModel.Pages.PlanetRomeo
                 });
             }
         }
+
         public DelegateCommand ParseGays
         {
             get
             {
-                return new DelegateCommand(() =>
+                return new DelegateCommand(HeadActions(() =>
                 {
-                    Task.Factory.StartNew(() =>
-                    {
-                        _work = true;
-                        var bot = new BotPlanetRomeo(new ConsoleMessageService(), new WinFormMessageService(),
-                            new WebDriverManager(true));
+                    Parse(ref listprofilegays);
+                    SaveList(listprofilegays);
 
-                        if (bot.Authorization(SelectedProfile.Login, SelectedProfile.Password))
-                        {
-                            Parse(bot, ref listprofilegays);
-                            if (!_err)
-                            {
-                                bot.LogOut();
-                                bot.Quit();
-                            }
-                            SaveList(listprofilegays);
-                        }
-                        new WinFormMessageService().ShowMesssage("END PARSE PROFILES");
-                        _work = false;
-                    });
-                }, () =>
-                {
-                    if (!_work && SelectedProfile != default(Profile) && SelectedSearchSettings != default(PRSearchSettings) && ListMessages.Count > 0) return true; else return false;
-                });
+                }, "END PARSE PROFILES"), UseCommand);
             }
         }
         public DelegateCommand SendMessages
         {
             get
             {
-                return new DelegateCommand(() =>
+                return new DelegateCommand(HeadActions(()=>
                 {
-                    Task.Factory.StartNew(() =>
-                    {
-                        _work = true;
-                        var bot = new BotPlanetRomeo(new ConsoleMessageService(), new WinFormMessageService(),
-                            new WebDriverManager(true));
+                    listprofilegays = ListProfileGays.ToList();
+                    Send(ref listprofilegays);
+                    SaveList(listprofilegays);
 
-                        if (bot.Authorization(SelectedProfile.Login, SelectedProfile.Password))
-                        {
-                            listprofilegays = ListProfileGays.ToList();
-                            Send(bot, ref listprofilegays);
-                            if (!_err)
-                            {
-                                bot.LogOut();
-                                bot.Quit();
-                            }
-
-                            SaveList(listprofilegays);
-                        }
-                        new WinFormMessageService().ShowMesssage("END SEND MESSAGE");
-                        _work = false;
-                    });
-                }, () =>
-                {
-                    if (!_work && SelectedProfile != default(Profile) && SelectedSearchSettings != default(PRSearchSettings) && ListMessages.Count > 0) return true; else return false;
-                });
+                }, "END SEND MESSAGE"), UseCommand);
             }
         }
-
         public DelegateCommand ParseAndSend
         {
             get
             {
-                return new DelegateCommand(() =>
+                return new DelegateCommand(HeadActions(()=>
                 {
-                    Task.Factory.StartNew(() =>
-                    {
-                        _work = true;
-                        var bot = new BotPlanetRomeo(new ConsoleMessageService(), new WinFormMessageService(),
-                            new WebDriverManager(true));
-                        if (bot.Authorization(SelectedProfile.Login, SelectedProfile.Password))
-                        {
-                            Parse(bot, ref listprofilegays);
-                            SaveList(listprofilegays);
-                            if (!_err) Send(bot, ref listprofilegays);
-                            SaveList(listprofilegays);
+                    Parse(ref listprofilegays);
+                    SaveList(listprofilegays);
+                    if (!_err) Send(ref listprofilegays);
+                    SaveList(listprofilegays);
 
-                            if (!_err)
-                            {
-                                bot.LogOut();
-                                bot.Quit();
-                            }
-                        }
-                        new WinFormMessageService().ShowMesssage("END PARSE AND SEND MESSAGE");
-                        _work = false;
-                    });
-                }, () =>
-                {
-                    if (!_work && SelectedProfile != default(Profile) && SelectedSearchSettings != default(PRSearchSettings) && ListMessages.Count > 0) return true; else return false;
-                });
+                }, "END PARSE AND SEND MESSAGE"), UseCommand);
             }
         }
     }
