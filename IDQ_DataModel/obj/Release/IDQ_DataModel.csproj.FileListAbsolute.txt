@@ -9,3 +9,5 @@ F:\IDQuods\IDQ_Bot\IDQ_DataModel\obj\Release\IDQ_DataModel.csproj.CoreCompileInp
 F:\IDQuods\IDQ_Bot\IDQ_DataModel\obj\Release\IDQ_DataModel.csproj.CopyComplete
 F:\IDQuods\IDQ_Bot\IDQ_DataModel\obj\Release\IDQ_DataModel.dll
 F:\IDQuods\IDQ_Bot\IDQ_DataModel\obj\Release\IDQ_DataModel.pdb
+F:\IDQuods\IDQ_Bot\IDQ_DataModel\bin\Release\WebDriver.xml
+F:\IDQuods\IDQ_Bot\IDQ_DataModel\bin\Release\WebDriver.Support.xml

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace IDQ_Bot.ViewModel.Pages.PlanetRomeo
 {
@@ -54,7 +55,7 @@ namespace IDQ_Bot.ViewModel.Pages.PlanetRomeo
             }
 
             log = new ConsoleMessageService();
-            bot = new PRBot(new WebDriverManager(), log, log);
+            bot = new PRBot(new WebDriverManager());
         }
 
 
@@ -168,10 +169,10 @@ namespace IDQ_Bot.ViewModel.Pages.PlanetRomeo
         {
             return () =>
             {
-                Task.Factory.StartNew(() =>
+                Thread th = new Thread(() =>
                 {
                     _work = true;
-                    bot = new PRBot(new WebDriverManager(true), log, log);
+                    bot = new PRBot(new WebDriverManager(true));
                     bot.ActionEvent += Bot_ActionEvent;
                     bot.ActionErrorEvent += Bot_ActionErrorEvent;
 
@@ -190,6 +191,7 @@ namespace IDQ_Bot.ViewModel.Pages.PlanetRomeo
 
                     _work = false;
                 });
+                th.Start();
             };
         }
 
@@ -200,6 +202,7 @@ namespace IDQ_Bot.ViewModel.Pages.PlanetRomeo
 
         private void Bot_ActionEvent(string obj)
         {
+            new ConsoleMessageService().ShowMesssage(obj);
             if(obj == "Stop") { _err = true; SaveList(listprofilegays); }
         }
 

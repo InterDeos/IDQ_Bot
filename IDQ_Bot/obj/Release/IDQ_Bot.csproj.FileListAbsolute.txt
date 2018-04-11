@@ -31,3 +31,5 @@ F:\IDQuods\IDQ_Bot\IDQ_Bot\obj\Release\IDQ_Bot.pdb
 F:\IDQuods\IDQ_Bot\IDQ_Bot\obj\Release\IDQ_Bot.csprojResolveAssemblyReference.cache
 F:\IDQuods\IDQ_Bot\IDQ_Bot\bin\Release\IDQ_DataModel.dll
 F:\IDQuods\IDQ_Bot\IDQ_Bot\bin\Release\IDQ_DataModel.pdb
+F:\IDQuods\IDQ_Bot\IDQ_Bot\bin\Release\WebDriver.xml
+F:\IDQuods\IDQ_Bot\IDQ_Bot\bin\Release\WebDriver.Support.xml

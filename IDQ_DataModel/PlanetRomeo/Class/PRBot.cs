@@ -19,24 +19,23 @@ namespace IDQ_DataModel.PlanetRomeo.Class
         private void Web_Action(string obj)
         {
             ActionEvent?.Invoke(obj);
-            LogMessageService.ShowMesssage(obj);
         }
         private void Web_ActionError(string obj)
         {
             ActionErrorEvent?.Invoke(obj);
-            LogErrorMessageService.ShowError(obj);
         }
+
+
         private int RandInt(int min, int max)
         {
+            if (max == 0 && min == 0) return 0;
             if (min > max) return min;
             return new Random().Next(min, max);
         }
 
-        public PRBot(IWebDriverManager webdriver, IMessageService log, IMessageService logerror)
+        public PRBot(IWebDriverManager webdriver)
         {
             web = webdriver;
-            LogMessageService = log;
-            LogErrorMessageService = logerror;
 
             web.Action += Web_Action;
             web.ActionError += Web_ActionError;
@@ -48,8 +47,6 @@ namespace IDQ_DataModel.PlanetRomeo.Class
             ActionEvent?.Invoke("Stop");
         }
         
-        public IMessageService LogMessageService { get; set; }
-        public IMessageService LogErrorMessageService { get; set; }
 
         public bool Work { get; private set; }
 
@@ -65,29 +62,33 @@ namespace IDQ_DataModel.PlanetRomeo.Class
 
         public bool IsAuthorized()
         {
-            web.GoToUrl("https://www.planetromeo.com/").Sleep(5000);
-            return web.IsElementPresent("img.avatar__image");
+            web.SwitchToDefault().
+                SwitchFrame("persoenliches");
+            if (web.FindElementObj("div.welcome_text") == null) return false;
+            else return true;
         }
         public bool Authorization(string login, string password)
         {
+            Work = true;
             web.
-                GoToUrl("https://www.planetromeo.com/#/auth/login").
-                FindElement("a.login__signup-link").
-                Click().
+                GoToUrl("https://classic.planetromeo.com/#/auth/login").
+                SwitchFrame("persoenliches").
                 FindElement("input#id_username").
                 SendKeys(login).
                 FindElement("input#id_password").
                 SendKeys(password).
                 Sleep(3000).
-                FindElement("button.mb").
-                Click().Sleep(5000);
+                FindElement("input[type=\"submit\"]").
+                Click().Sleep(5000).SwitchToDefault();
+
+            Work = false;
 
             return IsAuthorized();
         }
         public bool Logout()
         {
             web.GoToUrl("https://classic.planetromeo.com/main/logout/");
-            return !IsAuthorized();
+            return true;
         }
         public void Quit()
         {
@@ -103,7 +104,7 @@ namespace IDQ_DataModel.PlanetRomeo.Class
             string area, string minAge, string maxAge, int mintimeout, 
             int maxtimeout)
         {
-            web.GoToUrl("https://classic.planetromeo.com/").
+            web.SwitchToDefault().
                 SwitchFrame("rechts").
                 FindElement("a[href=\"/search/?action=showForm&searchType=userDetail\"]").
                 Sleep(1500, 2000).
@@ -151,7 +152,7 @@ namespace IDQ_DataModel.PlanetRomeo.Class
 
             foreach(var it in pages)
             {
-                LogMessageService.ShowExclamation(string.Format("Count: {0} href = {1}", pages.Count, it));
+                Web_Action(string.Format("Count: {0} href = {1}", pages.Count, it));
             }
 
             string pattern = "\\?uid=(\\d+)";
@@ -197,20 +198,10 @@ namespace IDQ_DataModel.PlanetRomeo.Class
             return _err;
         }
 
-        public bool SendMessage(PRProfileGay gay, List<Message> messages, int mintime, int maxtime)
+        private List<string> GetLanguages()
         {
-            _err = false;
-
-            var listmess = new List<Message>();
-
-            foreach (var item in messages)
-            {
-                listmess.Add(new Message { Text = item.Text.Contains("<nick>") ? item.Text.Replace("<nick>", gay.NickName) + ";" + item.Language : item.Text + ";" + item.Language });
-            }
-
-            web.GoToUrl(gay.LinkProfile);
-
-            var thList = web.FindElementsObj("table.prfl > tbody > tr > th").ToList();
+            List<string> listLanguage = new List<string>();
+            
             var tdList = web.FindElementsObj("table.prfl > tbody > tr > td").ToList();
 
             if (tdList.FindIndex((x) => x.GetAttribute("class") == "headline") >= 0)
@@ -218,32 +209,59 @@ namespace IDQ_DataModel.PlanetRomeo.Class
                 tdList.RemoveAt(tdList.FindIndex((x) => x.GetAttribute("class") == "headline"));
             }
 
+            return tdList[0].Text.Split(' ').ToList();
+        }
+
+        public bool SendMessage(PRProfileGay gay, List<Message> messages, int mintime, int maxtime)
+        {
+            _err = false;
+
+            var listmess = new List<Message>();
+            
+            foreach (var item in messages)
+            {
+                listmess.Add(new Message { Text = item.Text.Contains("<nick>") ? item.Text.Replace("<nick>", gay.NickName) + ";" + item.Language : item.Text + ";" + item.Language });
+            }
+
+            web.GoToUrl(gay.LinkProfile).Sleep(mintime, maxtime * 2);
+
+            var thList = GetLanguages();
             var messs = new List<Message>();
 
-            foreach (var item in tdList[0].Text.Split(' '))
+            foreach (var item in thList)
             {
                 string lang = item.Split(',')[0];
                 messs.AddRange(listmess.Where((x)=> x.Language == lang));
-                LogMessageService.ShowExclamation(string.Format("Messs count:{0} {1}",lang,messs.Count));
+                Web_Action(string.Format("Messs count: {0} = {1}",lang,messs.Count));
             }
-            foreach (var item in messs)
+            if (messs.Count == 0)
             {
-                LogMessageService.ShowExclamation(item.Text);
+                Web_ActionError("Langueges not found in ListMessage!\n Search English");
+                messs.AddRange(listmess.Where((x) => x.Language == "English"));
+                if (messs.Count == 0) { Web_ActionError("English Messages not found!"); return true; }
             }
-            List<Message> ResultMess = messs.Count > 0 ? messs : listmess.Where((x)=> x.Language == "English").ToList();
 
-            web.GoToUrl(gay.LinkMessage).
-                Sleep(mintime, maxtime);
+            
 
-            if (ResultMess.Count < 1) return true;
+            web.FindElement("a[href*=\"/msg/history.php?\"]")
+                .Sleep(mintime, maxtime).
+                Click().SwitcWindow(web.GetWindows().Last()).Sleep(mintime, maxtime);
 
             if (!web.IsElementPresent("div#humaninputcheck"))
             {
-                web.FindElement("textarea#txt").
-                Sleep(mintime, maxtime).
-                SendKeys(ResultMess[RandInt(0, messages.Count - 1)].Text).
-                Sleep(mintime, maxtime).
-                FindElement("input#id_submit").Click().Sleep(mintime, maxtime);
+                web.GoToUrl(gay.LinkMessage);
+                web.FindElement("textarea#txt");
+                web.Sleep(mintime, maxtime);
+                int ind = RandInt(0, messs.Count - 1);
+                if (ind >= messs.Count) ind =  messs.Count -1 ;
+                web.SendKeys(messs[ind].Text);
+                web.Sleep(mintime, maxtime);
+                List<string> vs = web.GetWindows();
+                web.FindElement("input#id_submit");
+                web.Sleep(500);
+                web.Click();
+                web.Sleep(500);
+                web.SwitcWindow(vs.First());
             }
             else
             {
@@ -254,40 +272,34 @@ namespace IDQ_DataModel.PlanetRomeo.Class
         }
         public int SendMessageEmail(PRProfileGay gay, List<Message> messages, int mintime, int maxtime)
         {
-            _err = false;
             int status = 0;
+
+            _err = false;
 
             var listmess = new List<Message>();
 
             foreach (var item in messages)
             {
-                listmess.Add(new Message { Text = item.Text.Replace("<nick>", gay.NickName) });
-            }
-            
-            web.GoToUrl(gay.LinkProfile);
-
-            var thList = web.FindElementsObj("table.prfl > tbody > tr > th").ToList();
-            var tdList = web.FindElementsObj("table.prfl > tbody > tr > td").ToList();
-
-            if (tdList.FindIndex((x) => x.GetAttribute("class") == "headline") >= 0)
-            {
-                tdList.RemoveAt(tdList.FindIndex((x) => x.GetAttribute("class") == "headline"));
+                listmess.Add(new Message { Text = item.Text.Contains("<nick>") ? item.Text.Replace("<nick>", gay.NickName) + ";" + item.Language : item.Text + ";" + item.Language });
             }
 
+            web.GoToUrl(gay.LinkProfile).Sleep(mintime, maxtime * 2);
+
+            var thList = GetLanguages();
             var messs = new List<Message>();
 
-            foreach (var item in tdList[0].Text.Split(' '))
+            foreach (var item in thList)
             {
                 string lang = item.Split(',')[0];
                 messs.AddRange(listmess.Where((x) => x.Language == lang));
-                LogMessageService.ShowExclamation(string.Format("Messs count:{0} {1}", lang, messs.Count));
+                Web_Action(string.Format("Messs count: {0} = {1}", lang, messs.Count));
             }
-            foreach (var item in messs)
+            if (messs.Count == 0)
             {
-                LogMessageService.ShowExclamation(item.Text);
+                Web_ActionError("Langueges not found in ListMessage!\n Search English");
+                messs.AddRange(listmess.Where((x) => x.Language == "English"));
+                if (messs.Count == 0) { Web_ActionError("English Messages not found!"); return 0; }
             }
-
-            List<Message> ResultMess = messs.Count > 0 ? messs : listmess.Where((x) => x.Language == "English").ToList();
 
 
             web.FindElement("a[href*=\"/msg/history.php?\"]")
@@ -297,12 +309,19 @@ namespace IDQ_DataModel.PlanetRomeo.Class
 
             if (elements.Count > 0 && elements.Last().Text == gay.NickName)
             {
-                web.GoToUrl(gay.LinkMessage).
-                FindElement("textarea#txt").
-                Sleep(mintime, maxtime).
-                SendKeys(ResultMess[RandInt(0, messages.Count - 1)].Text).
-                Sleep(mintime, maxtime).
-                FindElement("input#id_submit").Click().SwitcWindow(web.GetWindows().First());
+                web.GoToUrl(gay.LinkMessage);
+                web.FindElement("textarea#txt");
+                web.Sleep(mintime, maxtime);
+                int ind = RandInt(0, messs.Count - 1);
+                if (ind >= messs.Count) ind = messs.Count - 1;
+                web.SendKeys(messs[ind].Text);
+                web.Sleep(mintime, maxtime);
+                List<string> vs = web.GetWindows();
+                web.FindElement("input#id_submit");
+                web.Sleep(500);
+                web.Click();
+                web.Sleep(500);
+                web.SwitcWindow(vs.First());
                 status = 1;
             }
             else
